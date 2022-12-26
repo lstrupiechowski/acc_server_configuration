@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/acc-server-configuration/static/css/main.527ba40a.css",
-    "main.js": "/acc-server-configuration/static/js/main.aaf8cbfb.js",
-    "static/js/787.790cdd43.chunk.js": "/acc-server-configuration/static/js/787.790cdd43.chunk.js",
-    "index.html": "/acc-server-configuration/index.html",
-    "main.527ba40a.css.map": "/acc-server-configuration/static/css/main.527ba40a.css.map",
-    "main.aaf8cbfb.js.map": "/acc-server-configuration/static/js/main.aaf8cbfb.js.map",
-    "787.790cdd43.chunk.js.map": "/acc-server-configuration/static/js/787.790cdd43.chunk.js.map"
+    "main.css": "/acc_server_configuration/static/css/main.527ba40a.css",
+    "main.js": "/acc_server_configuration/static/js/main.79211234.js",
+    "static/js/787.790cdd43.chunk.js": "/acc_server_configuration/static/js/787.790cdd43.chunk.js",
+    "index.html": "/acc_server_configuration/index.html",
+    "main.527ba40a.css.map": "/acc_server_configuration/static/css/main.527ba40a.css.map",
+    "main.79211234.js.map": "/acc_server_configuration/static/js/main.79211234.js.map",
+    "787.790cdd43.chunk.js.map": "/acc_server_configuration/static/js/787.790cdd43.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.527ba40a.css",
-    "static/js/main.aaf8cbfb.js"
+    "static/js/main.79211234.js"
   ]
 }
