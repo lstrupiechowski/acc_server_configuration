@@ -1,7 +1,7 @@
 {
   "name": "acc_server_configurator",
   "version": "0.1.0",
-  "homepage": "https://lstrupiechowski.github.io/acc-server-configuration",
+  "homepage": "https://lstrupiechowski.github.io/acc_server_configuration",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",
