@@ -3,14 +3,15 @@ import {IDriver, IEntryList} from "./interfaces";
 import {Button,  Input} from "antd";
 
 export interface IEditDriverProps {
-    driver: IDriver,
-    setEntryList: React.Dispatch<React.SetStateAction<IEntryList>>,
-    entryList: IEntryList
+    driver: IDriver;
+    setEntryList: React.Dispatch<React.SetStateAction<IEntryList>>;
+    entryList: IEntryList;
+    closeModal: () => void;
 }
 const EditDriver = (props: IEditDriverProps) => {
-    const { driver, setEntryList, entryList } = props;
+    const { driver, setEntryList, entryList, closeModal } = props;
     const [ d, setD ] = useState<IDriver>(driver);
-    const team = entryList.entries.find((x) => x.drivers.some((y) => y.playerID === d.playerID))
+    const team = entryList.entries.find((x) => x.drivers.some((y) => y.playerID === driver.playerID))
     return (
         <>
             <span>First Name:</span>
@@ -18,7 +19,24 @@ const EditDriver = (props: IEditDriverProps) => {
                setD({ ...d,
                firstName: val.target.value})
                )} />
-            <Button title={'Save'} onClick={() =>{
+            <span>Last Name:</span>
+            <Input  value={d.lastName} onChange={((val) =>
+                    setD({ ...d,
+                        lastName: val.target.value})
+            )} />
+            <span>Short Name:</span>
+            <Input  value={d.shortName} onChange={((val) =>
+                    setD({ ...d,
+                        shortName: val.target.value})
+            )} />
+            <span>PlayerID:</span>
+            <Input  value={d.playerID} onChange={((val) =>
+                    setD({ ...d,
+                        playerID: val.target.value})
+            )} />
+            <br/>
+            <br/>
+            <Button type={'primary'} onClick={() =>{
                 setEntryList({
                     ...entryList,
                     entries: entryList.entries.map((x) => {
@@ -26,7 +44,7 @@ const EditDriver = (props: IEditDriverProps) => {
                            return {
                                ...x,
                                drivers: x.drivers.map((y) => {
-                                   if (y.playerID === d.playerID) {
+                                   if (y.playerID === driver.playerID) {
                                        return d;
                                    }
 
@@ -37,9 +55,10 @@ const EditDriver = (props: IEditDriverProps) => {
 
                        return x;
                     })
-                })
+                });
+                closeModal();
             }
-            } />
+            } >Save</Button>
         </>
     );
 }

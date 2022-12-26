@@ -3,19 +3,50 @@ import {useState} from "react";
 import {IDriver, IEntryList, ITeam} from "./interfaces";
 import Column from "antd/lib/table/Column";
 import EditDriver from "./EditDriver";
+import AddDriver from "./AddDriver";
+import AddTeam from "./AddTeam";
+import EditTeam from "./EditTeam";
 const { TextArea } = Input;
 const Main = () => {
     const [ entryList, setEntryList ] = useState<IEntryList>({configVersion: 0, entries: []});
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isEditDriverModalOpen, setIsEditDriverModalOpen] = useState(false);
+    const [isAddDriverModalOpen, setIsAddDriverModalOpen] = useState(false);
+    const [isAddTeamModalOpen, setIsAddTeamModalOpen] = useState(false);
+    const [isEditTeamModalOpen, setIsEditTeamModalOpen] = useState(false);
     const [selectedDriver, setSelectedDriver] = useState<IDriver | undefined>();
+    const [selectedTeam, setSelectedTeam] = useState<ITeam | undefined>();
 
-    const showModal = () => {
-        setIsModalOpen(true);
+    const showEditDriverModal = () => {
+        setIsEditDriverModalOpen(true);
     };
 
-    const handleCancel = () => {
-        setIsModalOpen(false);
+    const handleEditDriverCancel = () => {
+        setIsEditDriverModalOpen(false);
+    };
+
+    const showAddDriverModal = () => {
+        setIsAddDriverModalOpen(true);
+    };
+
+    const handleAddDriverCancel = () => {
+        setIsAddDriverModalOpen(false);
+    };
+
+    const showAddTeamModal = () => {
+        setIsAddTeamModalOpen(true);
+    };
+
+    const handleAddTeamCancel = () => {
+        setIsAddTeamModalOpen(false);
+    };
+
+    const showEditTeamModal = () => {
+        setIsEditTeamModalOpen(true);
+    };
+
+    const handleEditTeamCancel = () => {
+        setIsEditTeamModalOpen(false);
     };
 
     const expandedRowRender = (record: ITeam) => {
@@ -46,11 +77,27 @@ const Main = () => {
                 render={(_: any, record: IDriver) => (
                     <Space size="middle">
                         <Button onClick={() => {
-                            showModal();
+                            showEditDriverModal();
                             setSelectedDriver(record);
                         }
                         }>Edit</Button>
-                        <Button>Delete</Button>
+                        <Button onClick={() => {
+                            const team = entryList.entries.find((x) => x.drivers.some((y) => y.playerID === record.playerID))
+                            setEntryList({
+                                ...entryList,
+                                entries: entryList.entries.map((x) => {
+                                    if (x.raceNumber === team?.raceNumber){
+                                        return {
+                                            ...x,
+                                            drivers: x.drivers.filter((obj) => { return obj !== record })
+                                        }
+                                    }
+
+                                    return x;
+                                })
+                            });
+                        }
+                        }>Delete</Button>
                     </Space>
                 )}
             />
@@ -68,6 +115,7 @@ const Main = () => {
                 expandable={{ expandedRowRender: expandedRowRender }}
                 dataSource={entryList.entries}
                 pagination={false}
+                key={'raceNumber'}
             >
                 <Column
                     title={'Car No.'}
@@ -87,19 +135,47 @@ const Main = () => {
                 <Column
                     title="Action"
                     key="action"
-                    render={(_: any) => (
+                    render={(_: any, record: ITeam) => (
                         <Space size="middle">
-                            <Button>Edit</Button>
-                            <Button>Delete</Button>
+                            <Button onClick={() => {
+                                showAddDriverModal();
+                                setSelectedTeam(record);
+                            }
+                            }>Add driver</Button>
+                            <Button onClick={() => {
+                                showEditTeamModal();
+                                setSelectedTeam(record);
+                            }
+                            }>Edit</Button>
+                            <Button  onClick={() => {
+                                setEntryList({
+                                    ...entryList,
+                                    entries: entryList.entries.filter((obj) => { return obj !== record })
+                                });
+                            }} >Delete</Button>
                         </Space>
                     )}
                 />
             </Table>
             <br/>
+            <Button type={'primary'} onClick={() => { showAddTeamModal() }} >Add team</Button>
+            <br/>
+            <br/>
             <Button type={'primary'} onClick={() => { navigator.clipboard.writeText(JSON.stringify(entryList)) }} >Copy new config to clipboard</Button>
         </div>
-            <Modal title="Player" open={isModalOpen} onCancel={handleCancel} destroyOnClose={true}>
-                <EditDriver driver={selectedDriver!} entryList={entryList} setEntryList={setEntryList} />
+            <Modal title="Edit driver" open={isEditDriverModalOpen} onCancel={handleEditDriverCancel} destroyOnClose={true} footer={null}>
+                <EditDriver driver={selectedDriver!} entryList={entryList} setEntryList={setEntryList}  closeModal={handleEditDriverCancel} />
+            </Modal>
+            <Modal title="Add driver" open={isAddDriverModalOpen} onCancel={handleAddDriverCancel} destroyOnClose={true} footer={null}>
+                <AddDriver team={selectedTeam!} entryList={entryList} setEntryList={setEntryList} closeModal={handleAddDriverCancel} />
+            </Modal>
+
+            <Modal title="Add team" open={isAddTeamModalOpen} onCancel={handleAddTeamCancel} destroyOnClose={true} footer={null}>
+                <AddTeam entryList={entryList} setEntryList={setEntryList} closeModal={handleAddTeamCancel} />
+            </Modal>
+
+            <Modal title="Add team" open={isEditTeamModalOpen} onCancel={handleEditTeamCancel} destroyOnClose={true} footer={null}>
+                <EditTeam team={selectedTeam!} entryList={entryList} setEntryList={setEntryList} closeModal={handleEditTeamCancel} />
             </Modal>
         </>
     );
