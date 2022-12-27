@@ -1,6 +1,6 @@
 import {Button, Descriptions, Input, Modal, Space, Table} from 'antd';
-import {useState} from "react";
-import {cars, driverCategories, IDriver, IEntryList, ITeam} from "./interfaces";
+import {useEffect, useState} from "react";
+import {cars, driverCategories, IDriver, IEntryList, IResult, ITeam} from "./interfaces";
 import Column from "antd/lib/table/Column";
 import EditDriver from "./EditDriver";
 import AddDriver from "./AddDriver";
@@ -9,6 +9,7 @@ import EditTeam from "./EditTeam";
 const { TextArea } = Input;
 const Main = () => {
     const [ entryList, setEntryList ] = useState<IEntryList>({configVersion: 0, entries: []});
+    const [ result, setResult ] = useState<IResult>();
 
     const [isEditDriverModalOpen, setIsEditDriverModalOpen] = useState(false);
     const [isAddDriverModalOpen, setIsAddDriverModalOpen] = useState(false);
@@ -111,10 +112,30 @@ const Main = () => {
         <>
         <h1 style={{ textAlign: "center" }}>ACC driver swap configurator - PS5 server</h1>
         <div className="main">
-            <Descriptions title="Paste entryList config" />
-            <TextArea style={{width: '300px'}} onChange={(val) => setEntryList(JSON.parse(val.target.value))}  />
+            <Descriptions title="Load drivers from result file:" />
+            <TextArea style={{width: '300px'}} onChange={(val) => {setResult(JSON.parse(val.target.value))}} />
             <br/><br/>
-            <Descriptions title="Loaded config" />
+            <Table
+                dataSource={result?.sessionResult.leaderBoardLines.map((x) => {
+                    return  x.currentDriver;
+                })}
+                pagination={false}
+                rowKey={'playerId'}
+            >
+                <Column
+                    title={'Name'}
+                    dataIndex={'lastName'}
+                />
+                <Column
+                    title={'Player Id'}
+                    dataIndex={'playerId'}
+                />
+            </Table>
+            <br/>
+            <Descriptions title="Load entryList configuration:" />
+            <TextArea placeholder={'Paste here entrylist.json content'} style={{width: '300px'}} onChange={(val) => setEntryList(JSON.parse(val.target.value))}  />
+            <br/><br/>
+            <Descriptions title="Loaded entrylist" />
             <Table
                 expandable={{ expandedRowRender: expandedRowRender }}
                 dataSource={entryList.entries}

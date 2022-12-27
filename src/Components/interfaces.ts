@@ -97,5 +97,22 @@ export const cars = [
     { value: '59', label: 'McLaren 570S GT4 (2016)' },
     { value: '60', label: 'Mercedes AMG GT4 (2016)' },
     { value: '61', label: 'Porsche 718 Cayman GT4 Clubsport' }
-
 ]
+
+export interface IResult {
+    "sessionResult": ISessionResult
+}
+
+export interface ISessionResult
+{
+    "leaderBoardLines": ILeaderBoardLine[];
+}
+
+export interface ILeaderBoardLine {
+    currentDriver: IDriverS
+}
+
+export interface IDriverS {
+    lastName: string;
+    playerId:  string;
+}
