@@ -1,6 +1,6 @@
-import {useState} from "react";
-import {IDriver, ITeam,  IEntryList} from "./interfaces";
-import {Button,  Input} from "antd";
+import { useState } from "react";
+import {IDriver, ITeam, IEntryList, driverCategories} from "./interfaces";
+import {Button, Input, Select} from "antd";
 
 export interface IAddDriverProps {
     team: ITeam;
@@ -13,20 +13,9 @@ const AddDriver = (props: IAddDriverProps) => {
     const [ d, setD ] = useState<IDriver>({
         driverCategory: 0,
         firstName: "",
-        glovesTemplateKey: 0,
-        helmetBaseColor: 0,
-        helmetDetailColor: 0,
-        helmetGlassColor: 0,
-        helmetGlassMetallic: 0,
-        helmetMaterialType: 0,
-        helmetTemplateKey: 0,
         lastName: "",
-        nationality: 0,
         playerID: "",
-        shortName: "",
-        suitDetailColor1: 0,
-        suitDetailColor2: 0,
-        suitTemplateKey: 0
+        shortName: ""
     });
     return (
         <>
@@ -35,16 +24,36 @@ const AddDriver = (props: IAddDriverProps) => {
                     setD({ ...d,
                         firstName: val.target.value})
             )} />
+            <br/>
+            <br/>
             <span>Last Name:</span>
             <Input  value={d.lastName} onChange={((val) =>
                     setD({ ...d,
                         lastName: val.target.value})
             )} />
+            <br/>
+            <br/>
             <span>Short Name:</span>
             <Input  value={d.shortName} onChange={((val) =>
                     setD({ ...d,
                         shortName: val.target.value})
             )} />
+            <br/>
+            <br/>
+            <span>Driver category:</span>
+            <br/>
+            <Select
+                style={{ width: 150 }}
+                defaultValue={d.driverCategory.toString()}
+                onChange={((value: string) =>
+                        setD({ ...d,
+                            driverCategory: value as unknown as number})
+                )
+                }
+                options={driverCategories}
+            />
+            <br/>
+            <br/>
             <span>PlayerID:</span>
             <Input  value={d.playerID} onChange={((val) =>
                     setD({ ...d,

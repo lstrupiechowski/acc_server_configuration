@@ -1,6 +1,6 @@
-import {Button, Descriptions, Input, Modal, Space, Table, TableColumnsType} from 'antd';
+import {Button, Descriptions, Input, Modal, Space, Table} from 'antd';
 import {useState} from "react";
-import {IDriver, IEntryList, ITeam} from "./interfaces";
+import {cars, driverCategories, IDriver, IEntryList, ITeam} from "./interfaces";
 import Column from "antd/lib/table/Column";
 import EditDriver from "./EditDriver";
 import AddDriver from "./AddDriver";
@@ -54,22 +54,25 @@ const Main = () => {
             <Column
                 title={'First name'}
                 dataIndex={'firstName'}
-                key={'firstName'}
             />
             <Column
                 title={'Last name'}
                 dataIndex={'lastName'}
-                key={'lastName'}
             />
             <Column
                 title={'Short name'}
                 dataIndex={'shortName'}
-                key={'shortName'}
+            />
+            <Column
+                title={'Driver category'}
+                dataIndex={'driverCategory'}
+                render={(_: any, record: IDriver) => (
+                    <span>{driverCategories?.find((x) => x?.value === record?.driverCategory?.toString())?.label}</span>
+                )}
             />
             <Column
                 title={'Player ID'}
                 dataIndex={'playerID'}
-                key={'playerID'}
             />
             <Column
                 key="playerID"
@@ -106,34 +109,37 @@ const Main = () => {
 
     return (
         <>
+        <h1 style={{ textAlign: "center" }}>ACC driver swap configurator - PS5 server</h1>
         <div className="main">
             <Descriptions title="Paste entryList config" />
-            <TextArea onChange={(val) => setEntryList(JSON.parse(val.target.value))}  />
-            <br/>
+            <TextArea style={{width: '300px'}} onChange={(val) => setEntryList(JSON.parse(val.target.value))}  />
+            <br/><br/>
             <Descriptions title="Loaded config" />
             <Table
                 expandable={{ expandedRowRender: expandedRowRender }}
                 dataSource={entryList.entries}
                 pagination={false}
-                key={'raceNumber'}
+                rowKey={'raceNumber'}
             >
                 <Column
                     title={'Car No.'}
                     dataIndex={'raceNumber'}
-                    key={'raceNumber'}
-                />
-                <Column
-                    title={'Custom car.'}
-                    dataIndex={'customCar'}
-                    key={'customCar'}
                 />
                 <Column
                     title={'Forced car model'}
                     dataIndex={'forcedCarModel'}
-                    key={'forcedCarModel'}
+                    render={(_: any, record: ITeam) => (
+                        <span>{cars?.find((x) => x?.value === record?.forcedCarModel?.toString())?.label}</span>
+                    )}
                 />
                 <Column
-                    title="Action"
+                    title={'Override driver info'}
+                    dataIndex={'overrideDriverInfo'}
+                    render={(_: any, record: ITeam) => (
+                        <span>{record.overrideDriverInfo === 1 ? 'Enabled' : 'Disabled'}</span>
+                        )}
+                />
+                <Column
                     key="action"
                     render={(_: any, record: ITeam) => (
                         <Space size="middle">

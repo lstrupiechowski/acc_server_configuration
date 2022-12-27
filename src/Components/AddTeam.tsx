@@ -1,6 +1,6 @@
-import {useState} from "react";
-import {IDriver, ITeam,  IEntryList} from "./interfaces";
-import {Button,  Input} from "antd";
+import { useState } from "react";
+import {ITeam, IEntryList, cars} from "./interfaces";
+import {Button, InputNumber, Select, Switch} from "antd";
 
 export interface IAddTeamProps {
     setEntryList: React.Dispatch<React.SetStateAction<IEntryList>>;
@@ -10,12 +10,9 @@ export interface IAddTeamProps {
 const AddTeam = (props: IAddTeamProps) => {
     const { setEntryList, entryList, closeModal } = props;
     const [ d, setD ] = useState<ITeam>({
-        configVersion: 0,
-        customCar: 'panky',
         defaultGridPosition: -1,
         drivers: [],
-        forcedCarModel: 0,
-        isServerAdmin: 0,
+        forcedCarModel: -1,
         overrideDriverInfo: 1,
         raceNumber: 0
     });
@@ -23,20 +20,35 @@ const AddTeam = (props: IAddTeamProps) => {
     return (
         <>
             <span>Race number:</span>
-            <Input value={d.raceNumber} onChange={((val) =>
+            <br/>
+            <InputNumber value={d.raceNumber} onChange={((val) =>
                     setD({ ...d,
-                        raceNumber: val.target.value as unknown as number })
+                        raceNumber: val ?? -1 })
             )} />
-            <span>Custom car:</span>
-            <Input value={d.customCar} onChange={((val) =>
-                    setD({ ...d,
-                        customCar: val.target.value})
-            )} />
+            <br/>
+            <br/>
             <span>Forced car model:</span>
-            <Input  value={d.forcedCarModel} onChange={((val) =>
+            <br/>
+            <Select
+                style={{ width: 350 }}
+                defaultValue={d.forcedCarModel.toString()}
+                onChange={((value: string) =>
+                        setD({ ...d,
+                            forcedCarModel: value as unknown as number})
+                )
+                }
+                options={cars}
+            />
+            <br/>
+            <br/>
+            <span style={{margin: '4px'}} >Override driver info:</span>
+            <Switch defaultChecked={d.overrideDriverInfo === 1} onChange={((val) =>
                     setD({ ...d,
-                        forcedCarModel: val.target.value as unknown as number})
+                        overrideDriverInfo: val ? 1 : 0})
             )} />
+            {d.overrideDriverInfo !== 1 ?
+                <><br/><span style={{margin: '4px', color: "red"}} >For now server doesn't start when disabled</span></>
+                : undefined}
             <br/>
             <br/>
             <Button type={'primary'} onClick={() =>{
