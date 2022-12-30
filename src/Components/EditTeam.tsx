@@ -29,7 +29,7 @@ const EditTeam = (props: IEditTeamProps) => {
                 defaultValue={d.forcedCarModel.toString()}
                 onChange={((value: string) =>
                         setD({ ...d,
-                            forcedCarModel: value as unknown as number})
+                            forcedCarModel: Number(value) })
                 )
                 }
                 options={cars}

@@ -47,9 +47,8 @@ const AddDriver = (props: IAddDriverProps) => {
                 defaultValue={d.driverCategory.toString()}
                 onChange={((value: string) =>
                         setD({ ...d,
-                            driverCategory: value as unknown as number})
-                )
-                }
+                            driverCategory: Number(value)})
+                )}
                 options={driverCategories}
             />
             <br/>

@@ -14,7 +14,9 @@ const AddTeam = (props: IAddTeamProps) => {
         drivers: [],
         forcedCarModel: -1,
         overrideDriverInfo: 1,
-        raceNumber: 0
+        raceNumber: 0,
+        configVersion: 0,
+        isServerAdmin: 0
     });
 
     return (
@@ -34,7 +36,7 @@ const AddTeam = (props: IAddTeamProps) => {
                 defaultValue={d.forcedCarModel.toString()}
                 onChange={((value: string) =>
                         setD({ ...d,
-                            forcedCarModel: value as unknown as number})
+                            forcedCarModel: Number(value)})
                 )
                 }
                 options={cars}

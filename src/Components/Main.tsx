@@ -1,54 +1,25 @@
-import {Button, Descriptions, Input, Modal, Space, Table} from 'antd';
-import {useEffect, useState} from "react";
-import {cars, driverCategories, IDriver, IEntryList, IResult, ITeam} from "./interfaces";
+import {Button, Descriptions, Input, message, Modal, Space, Table} from 'antd';
+import { useState} from "react";
+import {cars, driverCategories, IDriver, IEntryList, ITeam, loadEntryList} from "./interfaces";
 import Column from "antd/lib/table/Column";
 import EditDriver from "./EditDriver";
 import AddDriver from "./AddDriver";
 import AddTeam from "./AddTeam";
 import EditTeam from "./EditTeam";
+import DriverList from "./DriverList";
 const { TextArea } = Input;
 const Main = () => {
     const [ entryList, setEntryList ] = useState<IEntryList>({configVersion: 0, entries: []});
-    const [ result, setResult ] = useState<IResult>();
 
     const [isEditDriverModalOpen, setIsEditDriverModalOpen] = useState(false);
     const [isAddDriverModalOpen, setIsAddDriverModalOpen] = useState(false);
     const [isAddTeamModalOpen, setIsAddTeamModalOpen] = useState(false);
     const [isEditTeamModalOpen, setIsEditTeamModalOpen] = useState(false);
+    const [isDriverListModalOpen, setIsDriverListModalOpen] = useState(false);
     const [selectedDriver, setSelectedDriver] = useState<IDriver | undefined>();
     const [selectedTeam, setSelectedTeam] = useState<ITeam | undefined>();
 
-    const showEditDriverModal = () => {
-        setIsEditDriverModalOpen(true);
-    };
-
-    const handleEditDriverCancel = () => {
-        setIsEditDriverModalOpen(false);
-    };
-
-    const showAddDriverModal = () => {
-        setIsAddDriverModalOpen(true);
-    };
-
-    const handleAddDriverCancel = () => {
-        setIsAddDriverModalOpen(false);
-    };
-
-    const showAddTeamModal = () => {
-        setIsAddTeamModalOpen(true);
-    };
-
-    const handleAddTeamCancel = () => {
-        setIsAddTeamModalOpen(false);
-    };
-
-    const showEditTeamModal = () => {
-        setIsEditTeamModalOpen(true);
-    };
-
-    const handleEditTeamCancel = () => {
-        setIsEditTeamModalOpen(false);
-    };
+    const [messageApi, contextHolder] = message.useMessage();
 
     const expandedRowRender = (record: ITeam) => {
         return <Table dataSource={record.drivers} pagination={false} >
@@ -81,7 +52,7 @@ const Main = () => {
                 render={(_: any, record: IDriver) => (
                     <Space size="middle">
                         <Button onClick={() => {
-                            showEditDriverModal();
+                            setIsEditDriverModalOpen(true);
                             setSelectedDriver(record);
                         }
                         }>Edit</Button>
@@ -112,31 +83,23 @@ const Main = () => {
         <>
         <h1 style={{ textAlign: "center" }}>ACC driver swap configurator - PS5 server</h1>
         <div className="main">
-            <Descriptions title="Load drivers from result file:" />
-            <TextArea style={{width: '300px'}} onChange={(val) => {setResult(JSON.parse(val.target.value))}} />
-            <br/><br/>
-            <Table
-                dataSource={result?.sessionResult.leaderBoardLines.map((x) => {
-                    return  x.currentDriver;
-                })}
-                pagination={false}
-                rowKey={'playerId'}
-            >
-                <Column
-                    title={'Name'}
-                    dataIndex={'lastName'}
-                />
-                <Column
-                    title={'Player Id'}
-                    dataIndex={'playerId'}
-                />
-            </Table>
-            <br/>
             <Descriptions title="Load entryList configuration:" />
-            <TextArea placeholder={'Paste here entrylist.json content'} style={{width: '300px'}} onChange={(val) => setEntryList(JSON.parse(val.target.value))}  />
+            {contextHolder}
+            <TextArea placeholder={'Paste here entrylist.json content'} style={{width: '300px'}} onChange={(val) => {
+                try {
+                    setEntryList(loadEntryList(JSON.parse(val.target.value)));
+                } catch (error) {
+                    messageApi.open({
+                        type: 'error',
+                        content: 'Not correct entrylist.json pasted',
+                    });
+                }
+            }}  />
             <br/><br/>
-            <Descriptions title="Loaded entrylist" />
-            <Table
+            <Button type={'primary'} onClick={() => { setIsAddTeamModalOpen(true) }} >Add team</Button> {'  '}
+            <Button type={'primary'} onClick={() => { setIsDriverListModalOpen(true) }} >Load driver list from result file</Button>
+            <br/>
+            {entryList ? <Table
                 expandable={{ expandedRowRender: expandedRowRender }}
                 dataSource={entryList.entries}
                 pagination={false}
@@ -165,12 +128,12 @@ const Main = () => {
                     render={(_: any, record: ITeam) => (
                         <Space size="middle">
                             <Button onClick={() => {
-                                showAddDriverModal();
+                                setIsAddDriverModalOpen(true);
                                 setSelectedTeam(record);
                             }
                             }>Add driver</Button>
                             <Button onClick={() => {
-                                showEditTeamModal();
+                                setIsEditTeamModalOpen(true);
                                 setSelectedTeam(record);
                             }
                             }>Edit</Button>
@@ -183,26 +146,29 @@ const Main = () => {
                         </Space>
                     )}
                 />
-            </Table>
-            <br/>
-            <Button type={'primary'} onClick={() => { showAddTeamModal() }} >Add team</Button>
+            </Table> : undefined}
             <br/>
             <br/>
-            <Button type={'primary'} onClick={() => { navigator.clipboard.writeText(JSON.stringify(entryList)) }} >Copy new config to clipboard</Button>
+            <Button type={'primary'} onClick={() => { navigator.clipboard.writeText(JSON.stringify(entryList, undefined, 2)) }} >Copy to clipboard</Button>
+            <div><pre>{JSON.stringify(entryList, null, 2) }</pre></div>
         </div>
-            <Modal title="Edit driver" open={isEditDriverModalOpen} onCancel={handleEditDriverCancel} destroyOnClose={true} footer={null}>
-                <EditDriver driver={selectedDriver!} entryList={entryList} setEntryList={setEntryList}  closeModal={handleEditDriverCancel} />
+            <Modal title="Edit driver" open={isEditDriverModalOpen} onCancel={() => setIsEditDriverModalOpen(false)} destroyOnClose={true} footer={null}>
+                <EditDriver driver={selectedDriver!} entryList={entryList} setEntryList={setEntryList}  closeModal={() => setIsEditDriverModalOpen(false)} />
             </Modal>
-            <Modal title="Add driver" open={isAddDriverModalOpen} onCancel={handleAddDriverCancel} destroyOnClose={true} footer={null}>
-                <AddDriver team={selectedTeam!} entryList={entryList} setEntryList={setEntryList} closeModal={handleAddDriverCancel} />
-            </Modal>
-
-            <Modal title="Add team" open={isAddTeamModalOpen} onCancel={handleAddTeamCancel} destroyOnClose={true} footer={null}>
-                <AddTeam entryList={entryList} setEntryList={setEntryList} closeModal={handleAddTeamCancel} />
+            <Modal title="Add driver" open={isAddDriverModalOpen} onCancel={() => setIsAddDriverModalOpen(false)} destroyOnClose={true} footer={null}>
+                <AddDriver team={selectedTeam!} entryList={entryList} setEntryList={setEntryList} closeModal={() => setIsAddDriverModalOpen(false)} />
             </Modal>
 
-            <Modal title="Add team" open={isEditTeamModalOpen} onCancel={handleEditTeamCancel} destroyOnClose={true} footer={null}>
-                <EditTeam team={selectedTeam!} entryList={entryList} setEntryList={setEntryList} closeModal={handleEditTeamCancel} />
+            <Modal title="Add team" open={isAddTeamModalOpen} onCancel={() => setIsAddTeamModalOpen(false)} destroyOnClose={true} footer={null}>
+                <AddTeam entryList={entryList} setEntryList={setEntryList} closeModal={() => setIsAddTeamModalOpen(false)} />
+            </Modal>
+
+            <Modal title="Add team" open={isEditTeamModalOpen} onCancel={() => setIsEditTeamModalOpen(false)} destroyOnClose={true} footer={null}>
+                <EditTeam team={selectedTeam!} entryList={entryList} setEntryList={setEntryList} closeModal={() => setIsEditTeamModalOpen(false)} />
+            </Modal>
+
+            <Modal title="Driver list" open={isDriverListModalOpen} onCancel={() => setIsDriverListModalOpen(false)} destroyOnClose={true} footer={null}>
+                <DriverList />
             </Modal>
         </>
     );

@@ -42,7 +42,7 @@ const EditDriver = (props: IEditDriverProps) => {
                 defaultValue={d.driverCategory.toString()}
                 onChange={((value: string) =>
                         setD({ ...d,
-                            driverCategory: value as unknown as number})
+                            driverCategory: Number(value)})
                 )
                 }
                 options={driverCategories}

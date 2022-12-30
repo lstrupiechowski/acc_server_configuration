@@ -10,8 +10,8 @@ export interface ITeam {
     defaultGridPosition:  number;
     forcedCarModel:  number;
     overrideDriverInfo: number;
-   // isServerAdmin: number;
-   // configVersion:  number;
+    isServerAdmin: number;
+    configVersion:  number;
 }
 
 export interface IDriver {
@@ -100,12 +100,12 @@ export const cars = [
 ]
 
 export interface IResult {
-    "sessionResult": ISessionResult
+    sessionResult: ISessionResult
 }
 
 export interface ISessionResult
 {
-    "leaderBoardLines": ILeaderBoardLine[];
+    leaderBoardLines: ILeaderBoardLine[];
 }
 
 export interface ILeaderBoardLine {
@@ -115,4 +115,27 @@ export interface ILeaderBoardLine {
 export interface IDriverS {
     lastName: string;
     playerId:  string;
+}
+
+export const loadEntryList = (el: IEntryList): IEntryList => {
+            return {
+                entries: el.entries.map(e => {
+                    return {
+                        drivers: e.drivers.map(d => {
+                            return {firstName: d.firstName,
+                                lastName: d.lastName,
+                                shortName: d.shortName,
+                                driverCategory: Number(d.driverCategory ?? 0),
+                                playerID: d.playerID}
+                        }),
+                        raceNumber: Number(e.raceNumber) ?? 0,
+                        defaultGridPosition:  Number(e.defaultGridPosition ?? -1),
+                        forcedCarModel: Number(e.forcedCarModel ?? -1),
+                        overrideDriverInfo: Number(e.overrideDriverInfo ?? 1),
+                        isServerAdmin: Number(e.isServerAdmin ?? 0),
+                        configVersion: Number(e.configVersion ?? 0)
+                    }
+                }),
+                configVersion: Number(el.configVersion)
+            };
 }
